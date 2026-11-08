@@ -4,10 +4,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.policy import PolicyAskRequest, PolicyAskResponse
-from app.services.rag_service import answer_policy_question
+from app.schemas.policy import PolicyAskRequest, PolicyAskResponse, PolicyStatusResponse
+from app.services.rag_service import answer_policy_question, get_policy_status
 
 router = APIRouter()
+
+
+@router.get("/status", response_model=PolicyStatusResponse)
+async def policy_status(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    return PolicyStatusResponse(**await get_policy_status(db))
 
 
 @router.post("/ask", response_model=PolicyAskResponse)

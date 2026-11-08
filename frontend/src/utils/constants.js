@@ -1,19 +1,18 @@
 export const TABS = {
   POLICY: 'policy',
   REMINDERS: 'reminders',
-  UPLOAD: 'upload',
 };
 
 export const DUE_STATUS_COLORS = {
-  current: 'bg-teal-100 text-teal-700',
-  due_soon: 'bg-amber-100 text-amber-700',
-  due_today: 'bg-amber-100 text-amber-700',
-  overdue: 'bg-red-100 text-red-700',
+  current: 'bg-emerald-50 text-emerald-800 ring-emerald-600/20',
+  due_soon: 'bg-amber-50 text-amber-900 ring-amber-600/20',
+  due_today: 'bg-amber-50 text-amber-900 ring-amber-600/20',
+  overdue: 'bg-red-50 text-red-800 ring-red-600/20',
 };
 
 export const DUE_STATUS_LABELS = {
   current: 'Current',
-  due_soon: 'Due Soon',
-  due_today: 'Due Today',
+  due_soon: 'Due soon',
+  due_today: 'Due today',
   overdue: 'Overdue',
 };

@@ -5,6 +5,7 @@ import { previewReminder, sendBulkReminders } from '../../api/reminders';
 import BorrowerRow from './BorrowerRow';
 import ReminderPreview from './ReminderPreview';
 import BulkActionBar from './BulkActionBar';
+import ReminderListUpload from './ReminderListUpload';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import { useUiStore } from '../../store/uiStore';
 import { formatCurrency } from '../../utils/formatters';
@@ -125,6 +126,7 @@ export default function BorrowerTable({ onRemindersSent }) {
           Select borrowers with upcoming or overdue installments and send AI-generated reminders.
         </p>
       </div>
+      <ReminderListUpload />
 
       <div className="space-y-2 mb-4">
         {borrowers.map((b) => (

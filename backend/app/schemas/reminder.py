@@ -52,3 +52,11 @@ class PaginatedReminderLogs(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class ReminderListUploadResponse(BaseModel):
+    filename: str
+    rows_read: int
+    borrowers_created: int
+    loans_created: int
+    message: str

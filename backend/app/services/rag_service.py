@@ -5,14 +5,16 @@ RAG pipeline:
 3. On query: embed query → cosine similarity search → top-5 chunks → send to LLM
 """
 
+import hashlib
 import re
 
 import fitz
-from sqlalchemy import delete, or_, select, text
+from sqlalchemy import delete, or_, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.models.policy_chunk import PolicyChunk
+from app.models.policy_document import PolicyDocument
 from app.services.ai_service import generate_llm_response, get_embedding, has_embedding_provider
 
 SYSTEM_PROMPT = """You are a senior credit policy analyst assistant.
@@ -69,8 +71,13 @@ async def _keyword_retrieve(query: str, db: AsyncSession, top_k: int = 5) -> str
     return "\n\n".join(c.content for c in chunks)
 
 
-async def ingest_pdf(file_bytes: bytes, db: AsyncSession) -> dict:
+async def ingest_pdf(
+    file_bytes: bytes,
+    db: AsyncSession,
+    filename: str = "policy.pdf",
+) -> dict:
     doc = fitz.open(stream=file_bytes, filetype="pdf")
+    page_count = doc.page_count
     full_text = ""
     for page in doc:
         full_text += page.get_text()
@@ -78,24 +85,77 @@ async def ingest_pdf(file_bytes: bytes, db: AsyncSession) -> dict:
 
     chunks = chunk_text(full_text)
     if not chunks:
-        return {"chunks_ingested": 0, "status": "empty_document"}
+        return {"chunks_ingested": 0, "status": "empty_document", "filename": filename}
 
+    sha = hashlib.sha256(file_bytes).hexdigest()
+    await db.execute(update(PolicyDocument).values(is_active=False))
     await db.execute(delete(PolicyChunk))
+
+    embedded_count = 0
+    policy_doc = PolicyDocument(
+        filename=filename,
+        sha256=sha,
+        file_data=file_bytes,
+        pages=page_count,
+        chunk_count=len(chunks),
+        embedded_count=0,
+        is_active=True,
+    )
+    db.add(policy_doc)
+    await db.flush()
 
     for i, chunk in enumerate(chunks):
         embedding = None
         if _has_embeddings():
             embedding = await get_embedding_for_chunk(chunk)
-        db_chunk = PolicyChunk(
-            content=chunk,
-            chunk_index=i,
-            section_title=extract_section_title(chunk),
-            embedding=embedding,
+            embedded_count += 1
+        db.add(
+            PolicyChunk(
+                policy_document_id=policy_doc.id,
+                content=chunk,
+                chunk_index=i,
+                section_title=extract_section_title(chunk),
+                embedding=embedding,
+            )
         )
-        db.add(db_chunk)
 
+    policy_doc.embedded_count = embedded_count
+    policy_doc.chunk_count = len(chunks)
     await db.flush()
-    return {"chunks_ingested": len(chunks), "status": "success"}
+    return {
+        "chunks_ingested": len(chunks),
+        "status": "success",
+        "filename": filename,
+        "pages": page_count,
+        "sha256": sha,
+    }
+
+
+async def get_policy_status(db: AsyncSession) -> dict:
+    result = await db.execute(
+        select(PolicyDocument)
+        .where(PolicyDocument.is_active.is_(True))
+        .order_by(PolicyDocument.ingested_at.desc())
+        .limit(1)
+    )
+    doc = result.scalar_one_or_none()
+    if not doc:
+        chunk_count = await db.execute(select(PolicyChunk.id).limit(1))
+        has_seed = chunk_count.first() is not None
+        return {
+            "loaded": has_seed,
+            "filename": "Sample seeded policy" if has_seed else None,
+            "pages": None,
+            "chunks_ingested": None,
+            "ingested_at": None,
+        }
+    return {
+        "loaded": True,
+        "filename": doc.filename,
+        "pages": doc.pages,
+        "chunks_ingested": doc.chunk_count,
+        "ingested_at": doc.ingested_at.isoformat() if doc.ingested_at else None,
+    }
 
 
 async def retrieve_context(query: str, db: AsyncSession, top_k: int = 5) -> str:

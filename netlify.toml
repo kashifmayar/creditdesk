@@ -1,0 +1,12 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Set VITE_API_BASE_URL in Netlify UI → Site settings → Environment variables
+# Example: https://creditdesk-api.onrender.com
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

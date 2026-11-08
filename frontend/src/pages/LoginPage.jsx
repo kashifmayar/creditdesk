@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
 import { login } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('analyst@bank.pk');
-  const [password, setPassword] = useState('analyst123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -29,61 +28,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-xl bg-navy flex items-center justify-center mb-4">
-            <Building2 className="w-7 h-7 text-white" />
-          </div>
-          <h1 className="text-xl font-medium text-ink">Credit Analyst Workspace</h1>
-          <p className="text-sm text-gray-500 mt-1">Sign in to your analyst account</p>
-        </div>
+    <div className="min-h-screen bg-surface px-4 flex items-center justify-center fade-in">
+      <div className="w-full max-w-md rounded-xl border border-line bg-white p-8 shadow-panel">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+          Credit Desk
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-ink">Sign in</h1>
+        <p className="mt-1 text-sm text-gray-500">Analyst access to policy and reminders.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+              Work email
             </label>
             <input
               id="email"
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-700 text-sm"
+              className="w-full rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-accent/40 focus:ring-2 focus:ring-accent/10"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-700 text-sm"
+              className="w-full rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-accent/40 focus:ring-2 focus:ring-accent/10"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-navy py-2.5 text-sm font-medium text-white transition hover:bg-accent disabled:opacity-50"
           >
             {loading ? <LoadingSpinner size="sm" /> : null}
-            Sign in
+            Continue
           </button>
         </form>
-
-        <p className="text-xs text-gray-400 text-center mt-6">
-          Demo: analyst@bank.pk / analyst123
-        </p>
       </div>
     </div>
   );

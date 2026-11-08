@@ -5,6 +5,10 @@ Production-ready full-stack application for credit analysts:
 1. **Policy Q&A** — RAG-powered chat over your credit policy manual with section citations
 2. **Payment Reminders** — Bulk AI-generated WhatsApp/SMS reminders for due and overdue borrowers
 
+> **Desktop app:** see [`desktop/`](./desktop/README.md) for the Electron version —
+> same functionality, local SQLite storage, upgraded RAG (heading-aware chunking,
+> page citations, hybrid retrieval, conversation history).
+
 ## Tech Stack
 
 - **Frontend:** React 18, Vite, Tailwind CSS, Zustand, TanStack Query
@@ -104,6 +108,23 @@ OPENAI_API_KEY=sk-...
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
 ```
+
+## Online demo (4–5 users, free)
+
+Use **Neon + Render + Netlify** (see [DEPLOY-FREE.md](./DEPLOY-FREE.md)).
+
+1. Push to GitHub (CI runs on every push via `.github/workflows/ci.yml`)
+2. Neon: Postgres + `CREATE EXTENSION vector`
+3. Render: deploy `backend/` with env vars from `.env.example`
+4. Netlify: deploy `frontend/` with `VITE_API_BASE_URL` and `VITE_DEMO_MODE=false`
+5. Set Render `CORS_ORIGINS` to your Netlify URL
+
+## Policy PDF storage
+
+- Upload PDF in **Policy** tab → **Replace PDF**
+- File bytes are stored in `policy_documents`
+- Text is chunked into `policy_chunks` with embeddings for retrieval
+- Chat answers use RAG over the active document
 
 ## API Overview
 

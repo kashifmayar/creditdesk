@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_NUMBER: str = "whatsapp:+14155238886"
 
+    # Comma-separated frontend URLs for CORS (e.g. https://your-app.netlify.app)
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
     @model_validator(mode="after")
     def align_embedding_dimension(self):
         if self.EMBEDDING_PROVIDER.lower() == "openai":

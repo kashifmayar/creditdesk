@@ -4,20 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: '#0F3460',
-        teal: {
-          DEFAULT: '#1D9E75',
-          600: '#1D9E75',
-        },
-        amber: {
-          DEFAULT: '#E07B20',
-          600: '#E07B20',
-        },
-        surface: '#F7F8FA',
-        ink: '#2C2C2A',
+        navy: '#0f2a44',
+        surface: '#f4f5f7',
+        ink: '#1a1d21',
+        line: '#e3e6ea',
+        accent: '#1b6b93',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        panel: '0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.06)',
       },
     },
   },
