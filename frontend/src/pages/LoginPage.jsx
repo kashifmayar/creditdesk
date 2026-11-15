@@ -28,13 +28,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface px-4 flex items-center justify-center fade-in">
-      <div className="w-full max-w-md rounded-xl border border-line bg-white p-8 shadow-panel">
+    <div className="chat-page-bg flex min-h-[100dvh] items-center justify-center px-4 fade-in">
+      <div className="w-full max-w-md rounded-2xl border border-white/60 bg-white/90 p-8 shadow-panel backdrop-blur-sm">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
           Credit Desk
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-ink">Sign in</h1>
-        <p className="mt-1 text-sm text-gray-500">Analyst access to policy and reminders.</p>
+        <p className="mt-1 text-sm text-gray-500">Sign in to your policy chat workspace.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-navy py-2.5 text-sm font-medium text-white transition hover:bg-accent disabled:opacity-50"
+            className="send-btn flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-white transition disabled:opacity-50"
           >
             {loading ? <LoadingSpinner size="sm" /> : null}
             Continue

@@ -6,7 +6,7 @@
   body {
     margin: 0;
     min-height: 100vh;
-    @apply bg-[#f4f5f7] text-[#1a1d21] antialiased;
+    @apply text-ink antialiased;
   }
 }
 
@@ -21,6 +21,54 @@
 
   .typing-dot {
     animation: typingBounce 1.2s infinite ease-in-out;
+  }
+
+  .chat-page-bg {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(129, 140, 248, 0.22), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(167, 139, 250, 0.15), transparent),
+      radial-gradient(ellipse 50% 35% at 0% 100%, rgba(56, 189, 248, 0.12), transparent),
+      linear-gradient(165deg, #f8f9ff 0%, #eef2ff 45%, #f5f3ff 100%);
+  }
+
+  .chat-panel {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow:
+      0 4px 24px rgba(99, 102, 241, 0.08),
+      0 1px 3px rgba(15, 23, 42, 0.06);
+  }
+
+  .chat-input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(199, 210, 254, 0.6);
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.06);
+  }
+
+  .chat-input:focus-within {
+    border-color: rgba(129, 140, 248, 0.55);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+  }
+
+  .send-btn {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6366f1 100%);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  }
+
+  .send-btn:not(:disabled):hover {
+    filter: brightness(1.06);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+  }
+
+  .user-bubble {
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #8b5cf6 100%);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+  }
+
+  .ai-bubble {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(238, 242, 255, 0.92) 100%);
+    border: 1px solid rgba(199, 210, 254, 0.45);
   }
 }
 

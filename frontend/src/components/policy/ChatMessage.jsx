@@ -14,21 +14,26 @@ export default function ChatMessage({ message }) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        className={`max-w-[92%] text-sm leading-relaxed sm:max-w-[85%] ${
           isUser
-            ? 'bg-navy text-white rounded-br-md'
+            ? 'user-bubble rounded-2xl rounded-br-md px-4 py-3 text-white shadow-lg'
             : message.isError
-              ? 'bg-red-50 text-red-800 border border-red-100 rounded-bl-md'
-              : 'bg-surface text-ink border border-line rounded-bl-md'
+              ? 'rounded-2xl rounded-bl-md border border-red-200/80 bg-red-50/90 px-4 py-3 text-red-800 backdrop-blur-sm'
+              : 'ai-bubble rounded-2xl rounded-bl-md px-4 py-3 text-ink shadow-md'
         }`}
       >
+        {message.isExcerpt && !message.isError && (
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-indigo-600/80">
+            Excerpt from manual (AI unavailable)
+          </p>
+        )}
         <p className="whitespace-pre-wrap">{cleanText || message.text}</p>
         {citations.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             {citations.map((c, i) => (
               <span
                 key={i}
-                className="inline-block rounded-md bg-white px-2 py-0.5 text-[11px] font-medium text-accent ring-1 ring-line"
+                className="inline-block rounded-lg bg-white/70 px-2 py-0.5 text-[11px] font-medium text-indigo-700 ring-1 ring-indigo-100"
               >
                 {c.replace(/[\[\]]/g, '')}
               </span>

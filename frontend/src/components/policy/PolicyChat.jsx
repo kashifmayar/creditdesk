@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { SendHorizontal } from 'lucide-react';
-import { askPolicy } from '../../api/policy';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Sparkles, SendHorizontal } from 'lucide-react';
+import { askPolicy, fetchPolicyStatus } from '../../api/policy';
 import ChatMessage from './ChatMessage';
-import PolicyDocBar from './PolicyDocBar';
 import QuickPills from './QuickPills';
 
 const STARTER = [
@@ -13,14 +12,14 @@ const STARTER = [
 ];
 
 export default function PolicyChat() {
-  const [messages, setMessages] = useState([
-    {
-      role: 'ai',
-      text: 'Questions are answered from your uploaded credit policy. Answers include the relevant section reference when available.',
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
+
+  const { data: policyStatus } = useQuery({
+    queryKey: ['policy-status'],
+    queryFn: fetchPolicyStatus,
+  });
 
   const { mutate: send, isPending } = useMutation({
     mutationFn: askPolicy,
@@ -28,7 +27,14 @@ export default function PolicyChat() {
       setMessages((prev) => [...prev, { role: 'user', text: question }]);
     },
     onSuccess: (data) => {
-      setMessages((prev) => [...prev, { role: 'ai', text: data.answer }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'ai',
+          text: data.answer,
+          isExcerpt: data.answer_mode === 'excerpt',
+        },
+      ]);
     },
     onError: (err) => {
       const detail = err.response?.data?.detail || 'Unable to reach the policy service.';
@@ -47,56 +53,111 @@ export default function PolicyChat() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isPending]);
 
+  const isEmpty = messages.length === 0;
+
   return (
-    <div className="flex h-[calc(100vh-13rem)] min-h-[520px] flex-col gap-4 fade-in">
-      <PolicyDocBar />
-
-      <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-line bg-white shadow-panel">
-        <div className="border-b border-line px-5 py-4">
-          <h2 className="text-base font-semibold text-ink">Policy assistant</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Internal Q&amp;A over the institution policy manual.
-          </p>
-          <QuickPills questions={STARTER} onSelect={handleSend} disabled={isPending} />
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {messages.map((msg, i) => (
-            <div key={i} className="slide-up" style={{ animationDelay: `${Math.min(i, 6) * 40}ms` }}>
-              <ChatMessage message={msg} />
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-1 pb-4 pt-2 sm:px-2 sm:pb-6 sm:pt-4 fade-in">
+      <div className="chat-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl sm:rounded-3xl sm:min-h-[min(720px,calc(100dvh-6.5rem))]">
+        {policyStatus && !policyStatus.ai_key_format_ok && (
+          <div className="border-b border-amber-200/80 bg-amber-50/95 px-4 py-2.5 text-xs leading-relaxed text-amber-950 sm:px-5">
+            AI is off. Use a free <strong>gsk_</strong> key from{' '}
+            <a
+              href="https://console.groq.com/keys"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-indigo-700 underline"
+            >
+              Groq
+            </a>{' '}
+            (set <code className="text-[10px]">AI_PROVIDER=groq</code> in .env) or an{' '}
+            <strong>AIza</strong> key from{' '}
+            <a
+              href="https://aistudio.google.com/apikey"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-indigo-700 underline"
+            >
+              Google AI Studio
+            </a>
+            . Then restart the backend.
+          </div>
+        )}
+        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-5 sm:py-6">
+          {isEmpty ? (
+            <div className="flex h-full min-h-[280px] flex-col items-center justify-center px-4 text-center sm:min-h-[360px]">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-400/35">
+                <Sparkles className="h-7 w-7" />
+              </div>
+              <h2 className="text-lg font-semibold text-ink sm:text-xl">Ask your credit policy</h2>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-600">
+                Get answers grounded in your uploaded procedure manual — with section references when
+                available.
+              </p>
+              <QuickPills
+                questions={STARTER}
+                onSelect={handleSend}
+                disabled={isPending}
+                className="mt-6 justify-center"
+              />
             </div>
-          ))}
-          {isPending && (
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 slide-up">
-              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-gray-400" />
-              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-gray-400 [animation-delay:150ms]" />
-              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-gray-400 [animation-delay:300ms]" />
-              <span className="ml-2">Searching policy…</span>
+          ) : (
+            <div className="space-y-4 sm:space-y-5">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className="slide-up"
+                  style={{ animationDelay: `${Math.min(i, 6) * 40}ms` }}
+                >
+                  <ChatMessage message={msg} />
+                </div>
+              ))}
+              {isPending && (
+                <div className="flex items-center gap-2 pl-1 text-sm text-indigo-600/80 slide-up">
+                  <span className="typing-dot h-2 w-2 rounded-full bg-indigo-400" />
+                  <span className="typing-dot h-2 w-2 rounded-full bg-violet-400 [animation-delay:150ms]" />
+                  <span className="typing-dot h-2 w-2 rounded-full bg-indigo-400 [animation-delay:300ms]" />
+                  <span className="ml-1">Thinking…</span>
+                </div>
+              )}
             </div>
           )}
           <div ref={bottomRef} />
         </div>
 
-        <div className="border-t border-line p-4">
-          <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent/10">
-            <input
-              type="text"
+        {!isEmpty && (
+          <div className="hidden border-t border-white/50 px-4 py-2 sm:block">
+            <QuickPills questions={STARTER} onSelect={handleSend} disabled={isPending} />
+          </div>
+        )}
+
+        <div className="border-t border-white/50 p-3 sm:p-4">
+          <div className="chat-input flex items-end gap-2 rounded-2xl p-2 sm:gap-3 sm:p-2.5">
+            <textarea
+              rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Ask about collateral, approvals, restructuring…"
               disabled={isPending}
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 disabled:opacity-60"
+              className="max-h-32 min-h-[2.5rem] flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-snug text-ink outline-none placeholder:text-gray-400 disabled:opacity-60"
             />
             <button
               onClick={() => handleSend()}
               disabled={isPending || !input.trim()}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-navy text-white transition hover:bg-accent disabled:opacity-40"
+              className="send-btn inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition disabled:opacity-40 sm:h-10 sm:w-10"
               aria-label="Send"
             >
-              <SendHorizontal className="h-4 w-4" />
+              <SendHorizontal className="h-5 w-5" />
             </button>
           </div>
+          <p className="mt-2 hidden text-center text-[10px] text-gray-500 sm:block">
+            Enter to send · Shift+Enter for a new line
+          </p>
         </div>
       </div>
     </div>

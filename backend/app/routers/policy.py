@@ -30,4 +30,14 @@ async def ask_policy(
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
+        msg = str(e)
+        if "404" in msg and "generativelanguage" in msg:
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Gemini embedding API rejected the request. "
+                    "Use an API key from https://aistudio.google.com/apikey (AIza…). "
+                    "Keyword search fallback should still apply after backend restart."
+                ),
+            )
         raise HTTPException(status_code=500, detail=f"Policy Q&A failed: {e}")

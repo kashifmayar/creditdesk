@@ -26,6 +26,16 @@ async def startup():
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
+        # Existing Docker volumes may predate new columns; create_all does not alter tables.
+        await conn.execute(
+            text(
+                """
+                ALTER TABLE policy_chunks
+                ADD COLUMN IF NOT EXISTS policy_document_id INTEGER
+                REFERENCES policy_documents(id)
+                """
+            )
+        )
 
     from app.seed import seed_if_empty
 

@@ -8,7 +8,7 @@ export default {
         surface: '#f4f5f7',
         ink: '#1a1d21',
         line: '#e3e6ea',
-        accent: '#1b6b93',
+        accent: '#4f46e5',
       },
       fontFamily: {
         sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],

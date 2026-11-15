@@ -8,6 +8,7 @@ class PolicyAskRequest(BaseModel):
 class PolicyAskResponse(BaseModel):
     answer: str
     context_used: str
+    answer_mode: str = "ai"
 
 
 class PolicyUploadResponse(BaseModel):
@@ -23,4 +24,6 @@ class PolicyStatusResponse(BaseModel):
     filename: str | None = None
     pages: int | None = None
     chunks_ingested: int | None = None
+    embedded_chunks: int | None = None
     ingested_at: str | None = None
+    ai_key_format_ok: bool = False

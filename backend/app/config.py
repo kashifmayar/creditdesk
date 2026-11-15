@@ -11,14 +11,20 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ALGORITHM: str = "HS256"
 
-    # AI provider: gemini (free, default for testing) | anthropic | openai (production)
+    # AI provider: gemini | groq (free chat, no Google key) | anthropic | openai
     AI_PROVIDER: str = "gemini"
+    # Embeddings: gemini (AIza key) | openai — Groq has no embeddings API; use keyword search
     EMBEDDING_PROVIDER: str = "gemini"
 
     # Google Gemini — free tier via https://aistudio.google.com/apikey
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
     GEMINI_EMBEDDING_MODEL: str = "text-embedding-004"
+
+    # Groq — free chat at https://console.groq.com/keys (key starts with gsk_)
+    GROQ_API_KEY: str = ""
+    # 20b: fast and fits Groq free token/min caps well for one daily user
+    GROQ_MODEL: str = "openai/gpt-oss-20b"
 
     # Production providers (switch AI_PROVIDER / EMBEDDING_PROVIDER when ready)
     ANTHROPIC_API_KEY: str = ""

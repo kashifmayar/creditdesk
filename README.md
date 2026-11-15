@@ -13,7 +13,8 @@ Production-ready full-stack application for credit analysts:
 
 - **Frontend:** React 18, Vite, Tailwind CSS, Zustand, TanStack Query
 - **Backend:** FastAPI, SQLAlchemy (async), PostgreSQL + pgvector
-- **AI (testing):** Google Gemini free tier — chat + embeddings (one API key)
+- **AI (single user, free):** [Groq](https://console.groq.com/keys) — reliable chat on free tier (`gsk_` key)
+- **AI (optional upgrade):** Google Gemini `AIza` — chat + embeddings
 - **AI (production):** Claude + OpenAI — switch via `AI_PROVIDER` / `EMBEDDING_PROVIDER`
 - **Notifications:** Twilio WhatsApp/SMS
 
@@ -21,7 +22,7 @@ Production-ready full-stack application for credit analysts:
 
 ```bash
 cp .env.example .env
-# Add your free GEMINI_API_KEY from https://aistudio.google.com/apikey
+# One analyst: add GROQ_API_KEY from https://console.groq.com/keys (AI_PROVIDER=groq)
 
 docker compose up --build
 ```
