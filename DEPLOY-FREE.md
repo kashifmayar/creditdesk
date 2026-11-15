@@ -35,7 +35,8 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ## Step 2: Backend (Render)
 
 1. Sign up at https://render.com
-2. **New → Blueprint** → connect GitHub repo `kashifmayar/creditdesk`
+2. **New → Blueprint** → connect GitHub repo `kashifmayar/creditdesk`  
+   Direct link (after login): `https://dashboard.render.com/blueprint/new?repo=https://github.com/kashifmayar/creditdesk`
 3. Or **New → Web Service** manually:
    - Root directory: `backend`
    - Build: `pip install -r requirements.txt`
@@ -47,10 +48,11 @@ CREATE EXTENSION IF NOT EXISTS vector;
 | Key | Value |
 |-----|-------|
 | `DATABASE_URL` | Your Neon URL (`postgresql+asyncpg://...?ssl=require`) |
-| `GEMINI_API_KEY` | From https://aistudio.google.com/apikey |
 | `SECRET_KEY` | Any long random string |
-| `AI_PROVIDER` | `gemini` |
-| `EMBEDDING_PROVIDER` | `gemini` |
+| `AI_PROVIDER` | `groq` |
+| `GROQ_API_KEY` | From https://console.groq.com/keys |
+| `GROQ_MODEL` | `openai/gpt-oss-20b` |
+| `EMBEDDING_PROVIDER` | `gemini` (leave `GEMINI_API_KEY` empty for keyword-only search) |
 | `CORS_ORIGINS` | `https://YOUR-SITE.netlify.app` (set after Step 3) |
 
 5. Deploy and wait ~5 min. Note your API URL, e.g.:
@@ -68,7 +70,8 @@ https://creditdesk-api.onrender.com
 ## Step 3: Frontend (Netlify)
 
 1. Sign up at https://netlify.com
-2. **Add new site → Import from Git** → select `kashifmayar/creditdesk`
+2. **Add new site → Import from Git** → select `kashifmayar/creditdesk`  
+   Direct link: `https://app.netlify.com/start/deploy?repository=https://github.com/kashifmayar/creditdesk`
 3. Build settings (auto-detected from `netlify.toml`):
    - Base directory: `frontend`
    - Build command: `npm run build`
@@ -104,7 +107,7 @@ https://creditdesk.netlify.app
 |---------|-----|
 | Login fails / CORS error | Set `CORS_ORIGINS` on Render to exact Netlify URL (no trailing slash) |
 | API slow on first visit | Render free tier woke from sleep — wait ~1 min |
-| AI not working | Check `GEMINI_API_KEY` on Render |
+| AI not working | Check `GROQ_API_KEY` and `AI_PROVIDER=groq` on Render |
 | DB connection error | Use `postgresql+asyncpg://` + `?ssl=require` for Neon |
 
 ---

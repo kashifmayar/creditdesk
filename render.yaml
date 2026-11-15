@@ -12,7 +12,11 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: AI_PROVIDER
-        value: gemini
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-20b
       - key: EMBEDDING_PROVIDER
         value: gemini
       - key: GEMINI_API_KEY
