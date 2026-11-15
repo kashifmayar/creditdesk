@@ -20,14 +20,13 @@ services:
     env_file: .env
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
+    # Uses DATABASE_URL from .env (Neon). Local `db` service is optional.
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
-    environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/credit_analyst
+    # Omit DATABASE_URL here to use Neon from .env; or keep local DB override below.
+    # environment:
+    #   DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/credit_analyst
 
   frontend:
     build: ./frontend

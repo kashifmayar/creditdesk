@@ -6,18 +6,13 @@ You create three free accounts; secrets stay in their dashboards only (never in 
 
 ---
 
-## 1. Neon (database) — ~3 min
+## 1. Neon (database)
 
-1. https://neon.tech → new project → copy connection string.
-2. Convert to async format:
+Already linked in this repo via `neon init` (project **creditdesk**, org `org-silent-shadow-25352889`, region Singapore).
 
-   `postgresql+asyncpg://USER:PASS@HOST/DB?ssl=require`
-
-3. SQL editor:
-
-   ```sql
-   CREATE EXTENSION IF NOT EXISTS vector;
-   ```
+- Console: https://console.neon.tech/app/projects/autumn-moon-44707794  
+- Local `.env` has `DATABASE_URL` (gitignored). Copy the same value into **Render** → `DATABASE_URL`.  
+- `pgvector` extension is enabled on the database.
 
 ---
 

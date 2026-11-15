@@ -12,3 +12,4 @@ pgdata/
 *.jpeg
 *.jpg
 desktop/
+.neon
